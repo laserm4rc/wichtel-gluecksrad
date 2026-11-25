@@ -12,8 +12,13 @@ Alle bekommen denselben Link und ein eigenes Passwort, drehen am Glücksrad und 
 ## Installation auf Pelican
 
 ### 1. Egg importieren
-Im Panel unter **Admin → Eggs → Importieren** die Datei [`pelican/egg-wichtel-gluecksrad.yaml`](pelican/egg-wichtel-gluecksrad.yaml) hochladen
-(oder die „Raw“-Adresse der Datei auf GitHub als URL angeben).
+Im Panel unter **Admin → Eggs → Importieren** diese Adresse als URL angeben:
+
+```
+https://raw.githubusercontent.com/laserm4rc/wichtel-gluecksrad/main/pelican/egg-wichtel-gluecksrad.yaml
+```
+
+Alternativ die Datei [`pelican/egg-wichtel-gluecksrad.yaml`](pelican/egg-wichtel-gluecksrad.yaml) herunterladen und hochladen.
 
 ### 2. Server anlegen
 - **Egg:** Wichtel-Glücksrad
