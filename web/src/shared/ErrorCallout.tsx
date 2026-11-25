@@ -1,0 +1,15 @@
+import { Callout } from '@radix-ui/themes';
+import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
+
+/** Einheitliche Fehlermeldung. Rendert nichts, wenn kein Fehler da ist. */
+export function ErrorCallout({ message }: { message: string | null | undefined }) {
+  if (!message) return null;
+  return (
+    <Callout.Root color="red" role="alert">
+      <Callout.Icon>
+        <ExclamationTriangleIcon />
+      </Callout.Icon>
+      <Callout.Text>{message}</Callout.Text>
+    </Callout.Root>
+  );
+}

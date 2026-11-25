@@ -1,0 +1,4 @@
+# Skripte und Egg laufen unter Linux: immer mit LF speichern
+*.sh text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf

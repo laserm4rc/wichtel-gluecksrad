@@ -1,0 +1,4 @@
+/* Einzige globale Regel: Browser-Standardabstand entfernen. Farben kommen vom <Theme>. */
+:global(body) {
+  margin: 0;
+}
