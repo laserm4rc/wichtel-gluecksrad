@@ -53,7 +53,7 @@ Wunschzettel pro Person, anonyme Fragen an den Wichtel, Budget und Datum auf der
 ## Reihenfolge
 1. ✅ App lokal: Rad, Login per Passwort, Zuteilungslogik (Demo-Daten: `npm run demo`, Start: `npm run build` + `npm start`)
 2. ✅ Admin über Konsole (`help` in der Pelican-Konsole) und Web unter `/admin` (Passwort aus `ADMIN_PASSWORD`, lokal in `.env`). Zeigt auch, wer sein Passwort schon benutzt und wer gedreht hat. Admin-Login übersteht einen Reload (Ablauf nach 30 Min. ohne Aktivität). Optionaler Co-Admin mit eigenem Passwort, der die Zuteilung je nach Einstellung gar nicht oder nur verdeckt sieht.
-3. Egg schreiben und auf dem Panel testen
+3. Egg schreiben und auf dem Panel testen. Egg ist fertig (`pelican/`, Repo: https://github.com/laserm4rc/wichtel-gluecksrad), der Test auf dem Panel steht noch aus.
 4. Domain und HTTPS
 5. Extras
 
@@ -63,8 +63,8 @@ Diese Punkte ersetzen die abweichenden Angaben weiter oben.
 2. **Rad:** Die Zuteilung steht vor dem ersten Drehen fest (Derangement). Das Rad ist nur eine Animation ohne eigene Funktion und landet auf dem vorbestimmten Namen. Gezogene Namen werden nicht markiert. Damit ist der Datenschutz-Punkt erledigt.
 3. **Admin:** Der Admin macht selbst mit. Die Zuteilung darf im Admin trotzdem immer sichtbar sein und wird nicht verdeckt.
 4. **Frontend:** React + TypeScript + Vite mit Radix Themes (Design-Regeln in `CLAUDE.local.md`). Das Backend bleibt Node.js + Express + SQLite (better-sqlite3).
-5. **GitHub-Repo:** gibt es noch nicht. Wird vor Schritt 3 (Egg) angelegt.
+5. **GitHub-Repo:** öffentlich unter https://github.com/laserm4rc/wichtel-gluecksrad
+6. **Pelican:** aktuelle 1.x, Egg im Format PLCN_v3 (YAML)
 
-## Offene Fragen (erst für Schritt 3 und 4 wichtig)
+## Offene Fragen (für Schritt 4)
 1. Gibt es schon eine Domain und einen Reverse Proxy auf dem Host?
-2. Welche Pelican-Version läuft?
