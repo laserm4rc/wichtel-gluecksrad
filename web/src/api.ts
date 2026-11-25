@@ -14,9 +14,19 @@ export interface SessionUser {
   spun: boolean;
 }
 
+/** Anmeldestart: vorher ist das Anmeldeformular gesperrt. */
+export interface LoginInfo {
+  open: boolean;
+  /** ISO-Zeitstempel oder null = sofort */
+  opensAt: string | null;
+  /** Zeitzone für die Anzeige, z. B. "Europe/Berlin" */
+  timeZone: string;
+}
+
 export interface Session {
   event: EventInfo;
   phase: Phase;
+  login: LoginInfo;
   user: SessionUser | null;
 }
 
@@ -53,6 +63,7 @@ export interface AdminState {
   phase: Phase;
   /** Wechselt bei jeder neuen Auslosung */
   drawId: string | null;
+  login: LoginInfo;
   participants: AdminParticipant[];
   exclusions: { a: number; b: number }[];
   assignments: AdminAssignment[];
@@ -178,6 +189,8 @@ export const adminApi = {
   /** Verdeckte Namen aufdecken: einen (giverId) oder alle */
   reveal: (giverId?: number) => admin<RevealResult>('POST', '/reveal', giverId === undefined ? {} : { giverId }),
   saveEvent: (event: EventInfo) => admin('PUT', '/event', event),
+  /** Anmeldestart setzen (Ortszeit "YYYY-MM-DDTHH:mm" in der Event-Zeitzone) oder mit null entfernen */
+  setLoginOpensAt: (local: string | null) => admin('PUT', '/login-opens', local ? { local } : { opensAt: null }),
   setCoAdminPassword: (password?: string) => admin('POST', '/coadmin/password', { password }),
   setCoAdminVisibility: (visibility: CoAdminVisibility) => admin('PUT', '/coadmin/visibility', { visibility }),
   removeCoAdmin: () => admin('DELETE', '/coadmin'),

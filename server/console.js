@@ -2,6 +2,7 @@ import readline from 'node:readline';
 import { StoreError } from './db.js';
 import { hashSecret } from './auth.js';
 import { generateAdminPassword } from './codes.js';
+import { formatDateTime, parseLocalDateTime } from './time.js';
 
 /**
  * Admin-Befehle über die Pelican-Konsole (stdin).
@@ -23,6 +24,9 @@ Befehle:
   reset ja                        Zuteilung löschen, zurück zur Teilnehmerliste
   event                           Event-Infos anzeigen
   event <title|budget|date|location> <Wert>   Event-Info ändern
+  opens                           Anmeldestart anzeigen
+  opens <Datum> [Uhrzeit]         Anmeldung erst ab dann erlauben, z. B. opens 30.11.2026 18:00
+  opens off                       Anmeldung sofort erlauben
   coadmin                         Co-Admin anzeigen
   coadmin password [passwort]     Co-Admin anlegen bzw. neues Passwort vergeben
   coadmin hidden | covered        Zuteilung für den Co-Admin ausblenden bzw. verdeckt zeigen
@@ -74,6 +78,10 @@ function run([command, ...args], { store, config, onStop }) {
       console.log(`Teilnehmer: ${people.length}`);
       console.log(`Angemeldet: ${loggedIn} von ${people.length}`);
       if (assignments.length) console.log(`Gedreht:    ${spun} von ${assignments.length}`);
+      const opensAt = store.getLoginOpensAt();
+      if (opensAt && !store.isLoginOpen()) {
+        console.log(`Anmeldung:  gesperrt bis ${formatDateTime(new Date(opensAt), config.timeZone ?? 'Europe/Berlin')}`);
+      }
       break;
     }
 
@@ -167,6 +175,25 @@ function run([command, ...args], { store, config, onStop }) {
       if (!(field in event)) throw new ConsoleError('Feld muss title, budget, date oder location sein.');
       store.setEvent({ ...event, [field]: rest.join(' ') });
       console.log(`${field} gespeichert.`);
+      break;
+    }
+
+    case 'opens': {
+      const timeZone = config.timeZone ?? 'Europe/Berlin';
+      if (args.length === 0) {
+        const opensAt = store.getLoginOpensAt();
+        if (!opensAt) return console.log('Kein Anmeldestart gesetzt: Anmelden ist sofort möglich.');
+        const when = formatDateTime(new Date(opensAt), timeZone);
+        return console.log(store.isLoginOpen() ? `Anmeldung offen (seit ${when}).` : `Anmeldung gesperrt bis ${when}.`);
+      }
+      if (['off', 'aus', 'sofort'].includes(args[0].toLowerCase())) {
+        store.setLoginOpensAt(null);
+        return console.log('Anmeldestart entfernt: Anmelden ist sofort möglich.');
+      }
+      const date = parseLocalDateTime(args.join(' '), timeZone);
+      if (!date) throw new ConsoleError('Datum nicht erkannt. Beispiel: opens 30.11.2026 18:00');
+      store.setLoginOpensAt(date);
+      console.log(`Anmeldung ab ${formatDateTime(date, timeZone)} (${timeZone}).`);
       break;
     }
 

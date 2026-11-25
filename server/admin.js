@@ -10,6 +10,7 @@ import {
 } from './auth.js';
 import { generateAdminPassword } from './codes.js';
 import { StoreError } from './db.js';
+import { parseLocalDateTime } from './time.js';
 
 export const ADMIN_TOKEN_HEADER = 'x-admin-token';
 
@@ -83,6 +84,7 @@ export function createAdminRouter({ store, config, secret }) {
       baseUrl: config.baseUrl,
       phase: store.getPhase(),
       drawId: store.getDrawId(),
+      login: { open: store.isLoginOpen(), opensAt: store.getLoginOpensAt(), timeZone: config.timeZone ?? 'Europe/Berlin' },
       participants: store.listParticipants().map((p) => ({ ...p, spunAt: spunByGiver.get(p.id) ?? null })),
       exclusions: store.listExclusions().map(([a, b]) => ({ a, b })),
       // Wer wen hat, verlässt den Server nur, wenn diese Rolle es sehen darf
@@ -159,6 +161,25 @@ export function createAdminRouter({ store, config, secret }) {
   });
 
   router.put('/event', mutate((req) => store.setEvent(req.body ?? {})));
+
+  /**
+   * Anmeldestart setzen oder entfernen:
+   * { local: "2026-11-30T18:00" } = Ortszeit in der Event-Zeitzone (aus dem Datumsfeld im Admin),
+   * { opensAt: ISO-Zeitstempel } oder { opensAt: null } = entfernen.
+   */
+  router.put(
+    '/login-opens',
+    mutate((req) => {
+      const local = req.body?.local;
+      if (typeof local === 'string' && local.trim()) {
+        const date = parseLocalDateTime(local, config.timeZone ?? 'Europe/Berlin');
+        if (!date) throw new StoreError('Datum nicht erkannt.');
+        store.setLoginOpensAt(date);
+      } else {
+        store.setLoginOpensAt(req.body?.opensAt ?? null);
+      }
+    }),
+  );
 
   // ---------- Co-Admin (nur Hauptadmin) ----------
 

@@ -134,6 +134,11 @@ export function AdminApp({ appearance, onToggleAppearance }: AdminAppProps) {
   );
 }
 
+/** z. B. "30.11., 18:00" in der Event-Zeitzone */
+function formatTimestampShort(iso: string, timeZone: string) {
+  return new Date(iso).toLocaleString('de-DE', { timeZone, day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
 /** Kurzer Überblick über dem Inhalt. */
 function Summary({ state }: { state: AdminState }) {
   const total = state.participants.length;
@@ -155,6 +160,11 @@ function Summary({ state }: { state: AdminState }) {
       <Badge size="2" variant="soft" color={loggedIn === total && total > 0 ? 'green' : 'gray'}>
         {loggedIn} von {total} angemeldet
       </Badge>
+      {!state.login.open && state.login.opensAt && (
+        <Badge size="2" variant="soft" color="orange">
+          Anmeldung ab {formatTimestampShort(state.login.opensAt, state.login.timeZone)}
+        </Badge>
+      )}
       {state.phase === 'open' && (
         <Badge size="2" variant="soft" color={spun === total ? 'green' : 'gray'}>
           {spun} von {total} gedreht

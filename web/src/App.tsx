@@ -80,7 +80,7 @@ function ParticipantApp({ appearance, onToggleAppearance }: { appearance: Appear
       ) : user ? (
         <WheelPage key={user.name} session={session as Session & { user: SessionUser }} onRefresh={load} />
       ) : (
-        <LoginPage onLoggedIn={load} />
+        <LoginPage login={session.login} onLoggedIn={load} onOpened={load} />
       )}
     </PageShell>
   );

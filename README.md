@@ -6,6 +6,7 @@ Alle bekommen denselben Link und ein eigenes Passwort, drehen am Glücksrad und 
 - Die Zuteilung steht vor dem ersten Drehen komplett fest: niemand zieht sich selbst, niemand wird doppelt gezogen, Ausschlüsse (z. B. Paare) werden beachtet.
 - Das Rad ist nur Animation und landet auf dem vorbestimmten Namen. Bei jedem Besuch muss neu gedreht werden, um den Namen zu sehen.
 - Admin-Bereich unter `/admin`: Personen und Passwörter, Ausschlüsse, Ziehung, Event-Infos, optionaler Co-Admin.
+- Optionaler Anmeldestart: Vor einem festen Datum mit Uhrzeit kann sich niemand anmelden. Die Anmeldeseite zeigt den Zeitpunkt mit Countdown und schaltet sich dann von selbst frei.
 - Admin-Befehle auch in der Pelican-Konsole (`help`).
 - Alles liegt in einer SQLite-Datei (`data/wichtel.db`) und wird von Pelican-Backups mitgesichert.
 
@@ -46,6 +47,7 @@ Im Panel unter **Einstellungen → Server neu installieren**. Der Code wird neu 
 1. Im Admin unter **Personen** alle eintragen. Passwörter werden automatisch erzeugt, z. B. `tanne-zimt-472`.
 2. Unter **Ausschlüsse** Paare festlegen, die sich nicht ziehen sollen.
 3. Unter **Ziehung** auf **Ziehung starten**.
+   Optional unter **Event → Anmeldung freischalten ab** festlegen, ab wann sich alle anmelden dürfen (z. B. 30.11., 18:00 Uhr).
 4. Jeder Person die Einladung schicken: Link und Passwort kopieren oder direkt per WhatsApp.
 5. Unter **Personen** sieht man, wer sein Passwort schon benutzt und wer gedreht hat.
 
@@ -60,6 +62,7 @@ Im Panel unter **Einstellungen → Server neu installieren**. Der Code wird neu 
 | `start` / `assignments` | Ziehung starten / Zuteilung anzeigen |
 | `redraw ja` / `reset ja` | Neu auslosen / Zuteilung löschen |
 | `event [feld] [wert]` | Event-Infos anzeigen oder ändern |
+| `opens 30.11.2026 18:00` / `opens off` | Anmeldestart setzen / entfernen (`opens` zeigt den Stand) |
 | `coadmin …` | Co-Admin verwalten (`coadmin` zeigt den Stand) |
 | `stop` | Server beenden |
 

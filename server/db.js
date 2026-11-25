@@ -115,6 +115,29 @@ export class Store {
     })();
   }
 
+  // ---------- Anmeldestart ----------
+
+  /** Ab wann sich Teilnehmer anmelden dürfen (ISO-Zeitstempel in UTC) oder null = sofort. */
+  getLoginOpensAt() {
+    return this.getSetting('login_opens_at') || null;
+  }
+
+  /** Setzt den Anmeldestart. null oder "" entfernt die Sperre. */
+  setLoginOpensAt(value) {
+    if (value === null || value === undefined || value === '') {
+      this.db.prepare("DELETE FROM settings WHERE key = 'login_opens_at'").run();
+      return;
+    }
+    const date = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(date.getTime())) throw new StoreError('Ungültiges Datum.');
+    this.setSetting('login_opens_at', date.toISOString());
+  }
+
+  isLoginOpen(now = Date.now()) {
+    const opensAt = this.getLoginOpensAt();
+    return !opensAt || new Date(opensAt).getTime() <= now;
+  }
+
   // ---------- Co-Admin ----------
 
   /**

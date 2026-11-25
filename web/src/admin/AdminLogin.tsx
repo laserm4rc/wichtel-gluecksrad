@@ -37,6 +37,7 @@ export function AdminLogin({ onLoggedIn }: { onLoggedIn: () => void }) {
           </Flex>
           <TextField.Root
             size="3"
+            color="green"
             type="password"
             placeholder="Admin-Passwort"
             value={password}
@@ -50,7 +51,7 @@ export function AdminLogin({ onLoggedIn }: { onLoggedIn: () => void }) {
             </TextField.Slot>
           </TextField.Root>
           <ErrorCallout message={error} />
-          <Button size="3" type="submit" loading={busy} disabled={!password}>
+          <Button size="3" type="submit" color="green" loading={busy} disabled={!password}>
             Anmelden
           </Button>
         </Flex>

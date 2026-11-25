@@ -14,6 +14,8 @@ export const config = {
   /** Ohne ADMIN_PASSWORD ist der Web-Admin gesperrt, die Konsole funktioniert trotzdem. */
   adminPassword: env.ADMIN_PASSWORD || '',
   baseUrl: (env.BASE_URL || '').replace(/\/+$/, ''),
+  /** Zeitzone für Datum und Uhrzeit (z. B. „Anmeldung ab“). Container laufen meist in UTC. */
+  timeZone: env.TIMEZONE || 'Europe/Berlin',
   /** Startwerte für die Event-Infos. Im Admin lassen sie sich danach ändern. */
   eventDefaults: {
     title: env.EVENT_TITLE || 'Wichteln',

@@ -241,6 +241,53 @@ test('Co-Admin-Passwort: zu kurz oder gleich dem Hauptpasswort wird abgelehnt', 
   );
 });
 
+test('Anmeldestart: vorher gesperrt, danach offen, Admin kann setzen und entfernen', async () => {
+  const { call, adminLogin, store } = await start();
+  const main = await adminLogin();
+  const anna = store.addParticipant('Anna');
+  store.addParticipant('Ben');
+  store.startDraw();
+
+  // Anmeldung in der Zukunft: Login und Drehen gesperrt, Seite zeigt den Zeitpunkt
+  const future = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  let res = await call('PUT', '/api/admin/login-opens', { token: main, body: { opensAt: future } });
+  assert.equal(res.status, 200);
+  assert.deepEqual(res.body.login, { open: false, opensAt: future, timeZone: 'Europe/Berlin' });
+
+  let session = (await call('GET', '/api/session')).body;
+  assert.equal(session.login.open, false);
+  assert.equal(session.login.opensAt, future);
+  const blocked = await call('POST', '/api/login', { body: { password: anna.password } });
+  assert.equal(blocked.status, 403);
+  assert.match(blocked.body.error, /erst ab .* um \d\d:\d\d Uhr möglich/);
+  assert.equal(store.listParticipants().find((p) => p.name === 'Anna').loginCount, 0, 'gesperrter Versuch zählt nicht');
+
+  // Zeitpunkt in der Vergangenheit: offen
+  const past = new Date(Date.now() - 60 * 1000).toISOString();
+  await call('PUT', '/api/admin/login-opens', { token: main, body: { opensAt: past } });
+  const ok = await call('POST', '/api/login', { body: { password: anna.password } });
+  assert.equal(ok.status, 200);
+  const token = ok.body.token;
+  assert.equal((await call('POST', '/api/spin', { token })).status, 200);
+
+  // Wird der Start wieder nach hinten verschoben, gilt auch eine bestehende Anmeldung nicht mehr
+  await call('PUT', '/api/admin/login-opens', { token: main, body: { opensAt: future } });
+  assert.equal((await call('GET', '/api/session', { token })).body.user, null);
+  assert.equal((await call('POST', '/api/spin', { token })).status, 403);
+
+  // Entfernen: sofort offen
+  res = await call('PUT', '/api/admin/login-opens', { token: main, body: { opensAt: null } });
+  assert.deepEqual(res.body.login, { open: true, opensAt: null, timeZone: 'Europe/Berlin' });
+  assert.equal((await call('GET', '/api/session', { token })).body.user.name, 'Anna');
+
+  assert.equal((await call('PUT', '/api/admin/login-opens', { token: main, body: { opensAt: 'quatsch' } })).status, 400);
+
+  // Eingabe aus dem Datumsfeld im Admin: Ortszeit Berlin
+  res = await call('PUT', '/api/admin/login-opens', { token: main, body: { local: '2099-11-30T18:00' } });
+  assert.equal(res.body.login.opensAt, '2099-11-30T17:00:00.000Z');
+  assert.equal((await call('PUT', '/api/admin/login-opens', { token: main, body: { local: '2099-02-30T18:00' } })).status, 400);
+});
+
 test('Event-Infos ändern und auf der Teilnehmerseite sehen', async () => {
   const { call, adminLogin } = await start();
   const token = await adminLogin();

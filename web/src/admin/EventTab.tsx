@@ -1,8 +1,9 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Button, Card, Flex, Text, TextField } from '@radix-ui/themes';
+import { Button, Card, Flex, Heading, Text, TextField } from '@radix-ui/themes';
 import { CheckIcon } from '@radix-ui/react-icons';
 import { adminApi, type AdminState, type EventInfo } from '../api';
 import type { RunAction } from './AdminApp';
+import { LoginOpensCard } from './LoginOpensCard';
 
 const FIELDS: { key: keyof EventInfo; label: string; placeholder: string }[] = [
   { key: 'title', label: 'Titel', placeholder: 'z. B. Wichteln 2026' },
@@ -33,36 +34,42 @@ export function EventTab({ state, run }: { state: AdminState; run: RunAction }) 
   };
 
   return (
-    <Card mt="4">
-      <form onSubmit={submit}>
-        <Flex direction="column" gap="3">
-          {FIELDS.map(({ key, label, placeholder }) => (
-            <label key={key}>
-              <Flex direction="column" gap="1">
-                <Text size="2" weight="medium">
-                  {label}
-                </Text>
-                <TextField.Root
-                  value={values[key]}
-                  placeholder={placeholder}
-                  onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
-                />
-              </Flex>
-            </label>
-          ))}
-          <Flex justify="end">
-            <Button type="submit" loading={busy} disabled={!changed || !values.title.trim()} color={saved ? 'green' : undefined}>
-              {saved ? (
-                <>
-                  <CheckIcon /> Gespeichert
-                </>
-              ) : (
-                'Speichern'
-              )}
-            </Button>
+    <Flex direction="column" gap="4" pt="4">
+      <LoginOpensCard state={state} run={run} />
+      <Card>
+        <form onSubmit={submit}>
+          <Flex direction="column" gap="3">
+            <Heading as="h3" size="3">
+              Event-Infos
+            </Heading>
+            {FIELDS.map(({ key, label, placeholder }) => (
+              <label key={key}>
+                <Flex direction="column" gap="1">
+                  <Text size="2" weight="medium">
+                    {label}
+                  </Text>
+                  <TextField.Root
+                    value={values[key]}
+                    placeholder={placeholder}
+                    onChange={(e) => setValues((v) => ({ ...v, [key]: e.target.value }))}
+                  />
+                </Flex>
+              </label>
+            ))}
+            <Flex justify="end">
+              <Button type="submit" loading={busy} disabled={!changed || !values.title.trim()} color={saved ? 'green' : undefined}>
+                {saved ? (
+                  <>
+                    <CheckIcon /> Gespeichert
+                  </>
+                ) : (
+                  'Speichern'
+                )}
+              </Button>
+            </Flex>
           </Flex>
-        </Flex>
-      </form>
-    </Card>
+        </form>
+      </Card>
+    </Flex>
   );
 }
